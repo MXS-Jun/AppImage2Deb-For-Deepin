@@ -9,6 +9,8 @@ Basically, the quality of the deb package you build based on the arguments you p
 
 You can find AppImages to convert [here](https://appimage.github.io/apps/).
 
+The program will not extract AppImages to make debs, it will use an original single AppImage file to make a deb.
+
 # Dependencies
 To run `main.py` successfully you should install `PyQt5`.
 The `build.sh` will be called by a function in `main.py`, to run `build.sh` properly, you should have a `bash` environment with `fakeroot` installed.
