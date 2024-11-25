@@ -1,9 +1,11 @@
-# AppImage2Deb-For-Deepin
+# Abstract
 A convenient tool which can convert AppImage to Deb in [Deepin Standard](https://doc.chinauos.com/content/M7kCi3QB_uwzIp6HyF5J).
 
 ![preview](https://github.com/user-attachments/assets/80eab217-ef02-4fec-b339-38d3f11f2219)
 
 You should input the arguments in Deepin Standard.
+
+Basically, the quality of the deb package you build based on the arguments you provided.
 
 You can find AppImages to convert [here](https://appimage.github.io/apps/).
 
@@ -18,7 +20,7 @@ sudo apt install fakeroot
 
 It only supports amd64 architecture.
 
-# Run
+# Usage
 After download my script, you can just input the command below into your terminal:
 ```bash
 python3 /the/path/to/src/main.py
