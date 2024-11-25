@@ -7,10 +7,12 @@ You should input the arguments in Deepin Standard.
 # Dependencies
 To run `main.py` successfully you should install `PyQt5`.
 The `build.sh` will be called by a function in `main.py`, to run `build.sh` properly, you should have a `bash` environment with `fakeroot` installed.
-'''bash
+
+```bash
 sudo apt install python3-pyqt5
 sudo apt install fakeroot
-'''
+```
+
 # Run
 After download my script, you can just input the command below into your terminal:
 '''bash
