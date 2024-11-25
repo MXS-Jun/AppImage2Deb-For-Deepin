@@ -1,6 +1,8 @@
 # AppImage2Deb-For-Deepin
 A convenient tool which can convert AppImage to Deb in [Deepin Standard](https://doc.chinauos.com/content/M7kCi3QB_uwzIp6HyF5J).
+
 ![preview](https://github.com/user-attachments/assets/80eab217-ef02-4fec-b339-38d3f11f2219)
+
 You should input the arguments in Deepin Standard.
 # Dependencies
 To run `main.py` successfully you should install `PyQt5`.
