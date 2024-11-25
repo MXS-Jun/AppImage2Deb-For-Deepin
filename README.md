@@ -16,6 +16,8 @@ sudo apt install python3-pyqt5
 sudo apt install fakeroot
 ```
 
+Only support amd64 architecture.
+
 # Run
 After download my script, you can just input the command below into your terminal:
 ```bash
