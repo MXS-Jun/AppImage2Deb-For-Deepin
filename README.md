@@ -25,6 +25,7 @@ It only supports amd64 architecture.
 # Usage
 After download my script, you can just input the command below into your terminal:
 ```bash
-python3 /the/path/to/src/main.py
+cd /the/path/to/src/
+python3 main.py
 ```
 The deb file will be put in `/the/path/to/src`.
