@@ -26,8 +26,6 @@ sudo apt install imagemagick
 sudo apt install fakeroot
 ```
 
-It only supports amd64 architecture.
-
 # Usage
 After download my script, you can just input the command below into your terminal:
 
