@@ -23,6 +23,8 @@ fakeroot chmod +x ./"$APPIMAGE_NAME"
 ./"$APPIMAGE_NAME" --appimage-extract >/dev/null
 echo "Extract AppImage Successfully!"
 
+# TODO 有些图像的分辨率不是标准的，这会导致映射出问题
+
 ICON_SIZE=$(identify -format "%w" ./squashfs-root/*.png)
 mkdir -p ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/icons/hicolor/"$ICON_SIZE"x"$ICON_SIZE"/apps
 cp ./squashfs-root/*.png ./"$PACKAGE_NAME".png
@@ -31,10 +33,18 @@ mv ./"$PACKAGE_NAME".png ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/icon
 mkdir ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications
 cp ./squashfs-root/*.desktop ./"$PACKAGE_NAME".desktop
 mv ./"$PACKAGE_NAME".desktop ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications
-sed -i "s|^Name=.*|Name=$SOFTWARE_NAME|" ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
-sed -i "s|^Exec=.*|Exec=/opt/apps/$PACKAGE_NAME/files/AppRun|" ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
-sed -i "s|^Icon=.*|Icon=$PACKAGE_NAME|" ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
-sed -i "s|^Categories=.*|Categories=$CATEGORY;|" ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
+
+sed -i "s|^Name=.*|Name=$SOFTWARE_NAME|" \
+    ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
+
+sed -i "s|^Exec=.*|Exec=/opt/apps/$PACKAGE_NAME/files/AppRun|" \
+    ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
+
+sed -i "s|^Icon=.*|Icon=/opt/apps/$PACKAGE_NAME/entries/icons/hicolor/${ICON_SIZE}x${ICON_SIZE}/apps/$PACKAGE_NAME|" \
+    ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
+
+sed -i "s|^Categories=.*|Categories=$CATEGORY;|" \
+    ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/entries/applications/"$PACKAGE_NAME".desktop
 
 mkdir ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/files
 mv ./squashfs-root/* ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/files
@@ -50,6 +60,7 @@ touch ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME"/info
 
 mkdir ./"$PACKAGE_NAME"/DEBIAN
 touch ./"$PACKAGE_NAME"/DEBIAN/control
+touch ./"$PACKAGE_NAME"/DEBIAN/postinst
 
 INSTALLED_SIZE=$(du -sk ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME" | cut -f1)
 {
@@ -66,8 +77,16 @@ INSTALLED_SIZE=$(du -sk ./"$PACKAGE_NAME"/opt/apps/"$PACKAGE_NAME" | cut -f1)
     echo " ""$DETAILED_DESCRIPTION"
 } >>./"$PACKAGE_NAME"/DEBIAN/control
 
+{
+    echo "#!/bin/bash"
+    echo "chmod -R 777 /opt/apps/""$PACKAGE_NAME""/*"
+    echo "ln -s /opt/apps/$PACKAGE_NAME/entries/icons/hicolor/${ICON_SIZE}x${ICON_SIZE}/apps/$PACKAGE_NAME.png \
+    /usr/share/icons/hicolor/${ICON_SIZE}x${ICON_SIZE}/apps/$PACKAGE_NAME.png"
+} >>./"$PACKAGE_NAME"/DEBIAN/postinst
+
 fakeroot chmod 755 ./"$PACKAGE_NAME"/DEBIAN
 fakeroot chmod 644 ./"$PACKAGE_NAME"/DEBIAN/control
+fakeroot chmod 755 ./"$PACKAGE_NAME"/DEBIAN/postinst
 echo "Construct Package Successfully!"
 
 fakeroot dpkg -b ./"$PACKAGE_NAME" . >/dev/null && echo "Make deb Successfully"
