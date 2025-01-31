@@ -51,6 +51,7 @@ deb 文件会放在 `/the/path/to/code/`。
 配置好环境后，给予 `AppImage2Deb.sh` 可执行权限，并运行脚本。
 
 ```bash
+# For example
 cd /the/path/to/code/
 ./AppImage2Deb.sh
 ```
