@@ -294,8 +294,6 @@ case $? in
         ;;
 esac
 
-# 找到 png 文件，检测到分辨率不足 512x512 则超分辨率
-
 # 获取 icon 文件
 PNG_FILE_NAME="$(basename ${DESKTOP_FILE_NAME} .desktop).png"
 SVG_FILE_NAME="$(basename ${DESKTOP_FILE_NAME} .desktop).svg"
@@ -309,16 +307,14 @@ if [[ -L "${SVG_FILE}" ]]; then
     echo "[STATUS] 找到 svg 图标文件"
 elif [[ -L "${PNG_FILE}" ]]; then
     PNG_FILE="$(readlink -f "${PNG_FILE}")"
-    cp "${PNG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/"
-    mv "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${PNG_FILE_NAME}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${ID}.png"
+    ../SR-PNG "${PNG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${ID}.png"
     echo "[STATUS] 找到 png 图标文件"
 elif [[ -e "${SVG_FILE}" ]]; then
     cp "${SVG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/"
     mv "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${SVG_FILE_NAME}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.svg"
     echo "[STATUS] 找到 svg 图标文件"
 elif [[ -e "${PNG_FILE}" ]]; then
-    cp "${PNG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/"
-    mv "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${PNG_FILE_NAME}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.png"
+    ../SR-PNG "${PNG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.png"
     echo "[STATUS] 找到 png 图标文件"
 else
     echo "[STATUS] 没有找到图标文件"
