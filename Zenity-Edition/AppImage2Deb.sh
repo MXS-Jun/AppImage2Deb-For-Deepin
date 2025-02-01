@@ -240,8 +240,8 @@ case $? in
 esac
 
 # 寻找 .desktop 文件
-DESKTOP_FILE=`find "./${ID}/opt/apps/${ID}/files/bin/" -type f -name "*.desktop"`
-DESKTOP_FILE=`realpath "${DESKTOP_FILE}"`
+DESKTOP_FILE="$(find "./${ID}/opt/apps/${ID}/files/bin/" -type f -name "*.desktop" -print -quit)"
+DESKTOP_FILE="$(readlink -f "${DESKTOP_FILE}")"
 
 case $? in
     0)
@@ -300,24 +300,17 @@ SVG_FILE_NAME="$(basename ${DESKTOP_FILE_NAME} .desktop).svg"
 PNG_FILE="./${ID}/opt/apps/${ID}/files/bin/${PNG_FILE_NAME}"
 SVG_FILE="./${ID}/opt/apps/${ID}/files/bin/${SVG_FILE_NAME}"
 
-if [[ -L "${SVG_FILE}" ]]; then
-    SVG_FILE="$(readlink -f "${SVG_FILE}")"
-    cp "${SVG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/"
-    mv "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${SVG_FILE_NAME}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.svg"
-    echo "[STATUS] 找到 svg 图标文件"
-elif [[ -L "${PNG_FILE}" ]]; then
-    PNG_FILE="$(readlink -f "${PNG_FILE}")"
-    ../SR-PNG "${PNG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${ID}.png"
-    echo "[STATUS] 找到 png 图标文件"
-elif [[ -e "${SVG_FILE}" ]]; then
-    cp "${SVG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/"
-    mv "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${SVG_FILE_NAME}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.svg"
-    echo "[STATUS] 找到 svg 图标文件"
-elif [[ -e "${PNG_FILE}" ]]; then
-    ../SR-PNG "${PNG_FILE}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.png"
-    echo "[STATUS] 找到 png 图标文件"
+if [[ -L "${SVG_FILE}" || -e "${SVG_FILE}" ]]; then
+    resolved_svg=$(readlink -f "${SVG_FILE}")
+    cp -f "${resolved_svg}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.svg"
+    echo "[STATUS] SVG 图标已复制到指定位置"
+elif [[ -L "${PNG_FILE}" || -e "${PNG_FILE}" ]]; then
+    # 处理 PNG（符号链接或普通文件）
+    resolved_png=$(readlink -f "${PNG_FILE}")
+    ../SR-PNG "${resolved_png}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${ID}.png"
+    echo "[STATUS] PNG 图标已超分辨率到 512x512 并复制到指定位置"
 else
-    echo "[STATUS] 没有找到图标文件"
+    echo "[WARN] 没有找到图标文件"
 fi
 
 # 修改 .desktop 文件的 Icon 字段
@@ -348,7 +341,7 @@ case $? in
         ;;
 esac
 
-# 从 .desktop 文件的 Categories 获取 section
+# TODO 从 .desktop 文件的 Categories 解析 section
 SECTION="utils"
 
 # 写入 control 文件
