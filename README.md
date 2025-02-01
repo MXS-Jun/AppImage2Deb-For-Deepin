@@ -1,7 +1,7 @@
 # 概述
-一个方便的小工具，用来以[UOS/Deepin打包标准](https://doc.chinauos.com/content/M7kCi3QB_uwzIp6HyF5J)将 AppImage 文件转化为 deb 文件。
+一个方便的小工具，用来以[ UOS/Deepin 打包标准](https://doc.chinauos.com/content/M7kCi3QB_uwzIp6HyF5J)将 AppImage 文件转化为 deb 文件。
 有 PyQt5 和 Zenity 两个版本。
-在使用时，你需要以[UOS/Deepin打包标准](https://doc.chinauos.com/content/M7kCi3QB_uwzIp6HyF5J)输入必要参数。
+在使用时，你需要以[ UOS/Deepin 打包标准](https://doc.chinauos.com/content/M7kCi3QB_uwzIp6HyF5J)输入必要参数。
 你可以在[这里](https://appimage.github.io/apps/)找到你感兴趣的 AppImage 文件。
 
 # 依赖
