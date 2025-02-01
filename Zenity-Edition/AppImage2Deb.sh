@@ -342,7 +342,58 @@ case $? in
 esac
 
 # TODO 从 .desktop 文件的 Categories 解析 section
-SECTION="utils"
+CATEGORIES="$(grep -Ei '^Categories=' "${DESKTOP_FILE}" | cut -d= -f2 | tr -d ' ')"
+
+case $? in
+    0)
+        echo "[STATUS] CATEGORIES=${CATEGORIES}"
+        ;;
+    *)
+        echo "[ERROR] 发生意外错误"
+        exit -1
+        ;;
+esac
+
+map_category_to_section() {
+    case "$1" in
+        "Development")    echo "devel" ;;
+        "Utility")        echo "utils" ;;
+        "Game")           echo "games" ;;
+        "Education")      echo "edu" ;;
+        "Network")        echo "net" ;;
+        "Graphics")       echo "graphics" ;;
+        "AudioVideo")     echo "sound" ;;
+        "Science")        echo "science" ;;
+        "Settings")       echo "admin" ;;
+        "System")         echo "admin" ;;
+        "Office")         echo "text" ;;
+        *)                echo "utils" ;;
+    esac
+}
+
+CATEGORIES=$(echo "${CATEGORIES}" | sed 's/;\+/;/g; s/;$//')
+IFS=';' read -ra CATEGORY_ARRAY <<< "${CATEGORIES}"
+
+SECTION=""
+for category in "${CATEGORY_ARRAY[@]}"; do
+    if [[ -n "${category}" ]]; then
+        mapped_section="$(map_category_to_section "${category}")"
+        if [[ -n "${mapped_section}" ]]; then
+            SECTION="${mapped_section}"
+            break
+        fi
+    fi
+done
+
+case $? in
+    0)
+        echo "[STATUS] SECTION="${SECTION}""
+        ;;
+    *)
+        echo "[ERROR] 发生意外错误"
+        exit -1
+        ;;
+esac
 
 # 写入 control 文件
 {
