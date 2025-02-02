@@ -254,9 +254,7 @@ case $? in
 esac
 
 # 将 .desktop 文件复制到 applications/ 并修改文件名
-cp "${DESKTOP_FILE}" "./${ID}/opt/apps/${ID}/entries/applications/"
-DESKTOP_FILE_NAME="$(ls "./${ID}/opt/apps/${ID}/entries/applications/")"
-mv "./${ID}/opt/apps/${ID}/entries/applications/${DESKTOP_FILE_NAME}" "./${ID}/opt/apps/${ID}/entries/applications/${ID}.desktop" 
+cp "${DESKTOP_FILE}" "./${ID}/opt/apps/${ID}/entries/applications/${ID}.desktop"
 
 case $? in
     0)
@@ -295,10 +293,13 @@ case $? in
 esac
 
 # 获取 icon 文件
-PNG_FILE_NAME="$(basename ${DESKTOP_FILE_NAME} .desktop).png"
-SVG_FILE_NAME="$(basename ${DESKTOP_FILE_NAME} .desktop).svg"
-PNG_FILE="./${ID}/opt/apps/${ID}/files/bin/${PNG_FILE_NAME}"
+ICON_FIELD=$(grep -iE '^Icon=' "${DESKTOP_FILE}" | cut -d= -f2 | tr -d ' \n\r')
+ICON_FILE="$(basename "$ICON_FIELD")"
+ICON_NAME="${ICON_FILE%.*}"
+SVG_FILE_NAME="${ICON_NAME}.svg"
+PNG_FILE_NAME="${ICON_NAME}.png"
 SVG_FILE="./${ID}/opt/apps/${ID}/files/bin/${SVG_FILE_NAME}"
+PNG_FILE="./${ID}/opt/apps/${ID}/files/bin/${PNG_FILE_NAME}"
 
 if [[ -L "${SVG_FILE}" || -e "${SVG_FILE}" ]]; then
     resolved_svg=$(readlink -f "${SVG_FILE}")
