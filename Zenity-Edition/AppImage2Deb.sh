@@ -292,10 +292,21 @@ case $? in
         ;;
 esac
 
-# 获取 icon 文件
+# 获取 icon 文件名
 ICON_FIELD=$(grep -iE '^Icon=' "${DESKTOP_FILE}" | cut -d= -f2 | tr -d ' \n\r')
+IMAGE_SUFFIXES="svg|png|xpm"
+if [[ "${ICON_FIELD}" =~ \.(${IMAGE_SUFFIXES})$ ]]; then
+    echo "[STATUS] ICON_FIELD=${ICON_FIELD}"
+else
+    ICON_FIELD="${ICON_FIELD}.suffix"
+    echo "[STATUS] ICON_FIELD=${ICON_FIELD}"
+fi
 ICON_FILE="$(basename "$ICON_FIELD")"
 ICON_NAME="${ICON_FILE%.*}"
+echo "[STATUS] ICON_FILE=${ICON_FILE}"
+echo "[STATUS] ICON_NAME=${ICON_NAME}"
+
+# 将 icon 文件放到指定位置
 SVG_FILE_NAME="${ICON_NAME}.svg"
 PNG_FILE_NAME="${ICON_NAME}.png"
 SVG_FILE="./${ID}/opt/apps/${ID}/files/bin/${SVG_FILE_NAME}"
@@ -306,7 +317,6 @@ if [[ -L "${SVG_FILE}" || -e "${SVG_FILE}" ]]; then
     cp -f "${resolved_svg}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/scalabel/apps/${ID}.svg"
     echo "[STATUS] SVG 图标已复制到指定位置"
 elif [[ -L "${PNG_FILE}" || -e "${PNG_FILE}" ]]; then
-    # 处理 PNG（符号链接或普通文件）
     resolved_png=$(readlink -f "${PNG_FILE}")
     ../SR-PNG "${resolved_png}" "./${ID}/opt/apps/${ID}/entries/icons/hicolor/512x512/apps/${ID}.png"
     echo "[STATUS] PNG 图标已超分辨率到 512x512 并复制到指定位置"
